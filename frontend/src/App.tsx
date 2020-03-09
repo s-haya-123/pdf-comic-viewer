@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import {getPDF} from './readPdf';
 
 function App() {
   return (
@@ -23,4 +24,5 @@ function App() {
   );
 }
 
+getPDF(`${process.env.PUBLIC_URL}/assets/sample.pdf`).then();
 export default App;

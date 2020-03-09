@@ -42,13 +42,13 @@
     "jest-watch-typeahead": "0.4.2",
     "mini-css-extract-plugin": "0.9.0",
     "optimize-css-assets-webpack-plugin": "5.0.3",
-    "pdfjs": "^2.3.5",
     "pnp-webpack-plugin": "1.6.0",
     "postcss-flexbugs-fixes": "4.1.0",
     "postcss-loader": "3.0.0",
     "postcss-normalize": "8.0.1",
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "4.0.1",
+    "pdfjs-dist": "^2.2.228",
     "react": "^16.13.0",
     "react-app-polyfill": "^1.0.6",
     "react-dev-utils": "^10.2.0",
@@ -88,6 +88,7 @@
     ]
   },
   "devDependencies": {
+    "@types/pdfjs-dist": "^2.1.3",
     "prettier": "^1.19.1"
   },
   "jest": {
