@@ -1,4 +1,32 @@
 .page {
     display: flex;
     flex-direction: row-reverse;
+    margin: auto;
+}
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    background: black;
+}
+.canvas-wrapper {
+    position: relative;
+}
+.back {
+    position: absolute;
+    height: 100%;
+    right: 0px;
+}
+.next {
+    position: absolute;
+    height: 100%;
+}
+.send {
+    display: flex;
+    align-items: center;
+    width: 20px;
+    opacity: 0.2;
+}
+.send:hover {
+    opacity: 1;
+    cursor: pointer;
 }

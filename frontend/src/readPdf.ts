@@ -1,6 +1,10 @@
 import {getDocument, PDFDocumentProxy, PDFPageProxy} from 'pdfjs-dist/webpack';
 
-export async function getPDFFactory(src: string) {
+export interface PDFFactorry {
+    getPDFSize: () => Promise<{width: number, height: number}>;
+    getPage: (page: number) => Promise<PDFPageProxy>
+}
+export async function getPDFFactory(src: string): Promise<PDFFactorry> {
     const docPromise = (getDocument(src).promise as unknown) as Promise<
     PDFDocumentProxy
     >;
