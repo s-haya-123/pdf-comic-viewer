@@ -5,6 +5,7 @@ import { PDFPageProxy } from 'pdfjs-dist';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight,faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 
+// TODO: perfomance tuning
 function RenderComic() {
   const canvasRefRight = useRef(null);
   const canvasRefLeft = useRef(null);
@@ -46,7 +47,7 @@ function RenderComic() {
     });
   },[]);
   const onClick = async (page: number) => {
-    if (!factory || !scale || !maxPage) {
+    if (!factory || !scale || !maxPage || page < 0 || page > maxPage ) {
       return ;
     }
     const nextPromiseAll: Promise<PDFPageProxy>[] = [];
@@ -75,17 +76,25 @@ function RenderComic() {
         renderPage(pdfPages[1], ctx2, scale);
       }
   }
+  const onkeypress = (e: React.KeyboardEvent) => {
+    if(e.key === 'ArrowLeft') {
+      onClick(page + 2);
+    }
+    if(e.key === 'ArrowRight') {
+      onClick(page - 2);
+    }
+  };
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1}>
       <div className="page">
         <div className="canvas-wrapper">
-          <div className="back send" onClick={()=> page -2 > 0 && onClick(page - 2)}>
+          <div className="back send" onClick={()=> onClick(page - 2)}>
             <FontAwesomeIcon icon={faChevronRight}/>
           </div>
           <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
         </div>
         <div className="canvas-wrapper">
-          <div className="next send"  onClick={()=>page + 1 < maxPage! && onClick(page + 2)}>
+          <div className="next send"  onClick={()=> onClick(page + 2)}>
             <FontAwesomeIcon icon={faChevronLeft}/>
           </div>
           <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>
