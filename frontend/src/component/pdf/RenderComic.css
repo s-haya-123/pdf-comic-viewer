@@ -33,10 +33,14 @@
 .slider {
     position: fixed;
     width: 100%;
-    bottom: 10px;
     z-index: 1;
+    bottom: 0px;
+    padding-bottom: 33px;
+    background: white;
+    opacity: 0.9;
 }
 input {
     width: 90%;
-    direction: rtl
+    direction: rtl;
+    margin-top: 20px;
 }

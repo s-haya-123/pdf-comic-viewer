@@ -14,6 +14,7 @@ function RenderComic() {
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState<number>();
   const [factory, setFactory] = useState<PDFFactory>();
+  const [showPageOperator, setShowPageOperator] = useState(false);
 
   const getContext = (canvas: HTMLCanvasElement | OffscreenCanvas) => {
     return canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -85,20 +86,27 @@ function RenderComic() {
       onClick(page - 2);
     }
   };
+  const sliderPointUp = (e:React.PointerEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    onClick(Number(e.currentTarget.value));
+  }
   return (
-    <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1}>
-      <div className="slider">
-        <input
-          type="range"
-          name="speed"
-          min="1"
-          max={(maxPage||1)-1}
-          step="2"
-          value={page}
-          onPointerUp={({currentTarget: {value}})=>onClick(Number(value))}
-          onChange={({target:{value}})=>setPage(Number(value))}
-        />
-      </div>
+    <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
+      {
+        showPageOperator &&
+          <div className="slider">
+            <input
+              type="range"
+              name="speed"
+              min="1"
+              max={(maxPage||1)-1}
+              step="2"
+              value={page}
+              onPointerUp={(e)=>sliderPointUp(e)}
+              onChange={({target:{value}})=>setPage(Number(value))}
+            />
+          </div>
+      }
       <div className="page">
         <div className="canvas-wrapper">
           <div className="back send" onClick={()=> onClick(page - 2)}>
