@@ -38,6 +38,7 @@ function RenderComic() {
       factory.getPage(2)
     ]);
     renderPDF(pages, scale);
+    console.log(pageNumber)
   };
   useEffect(() => {
     getPDFFactory(`${process.env.PUBLIC_URL}/assets/sample.pdf`).then(
@@ -86,6 +87,18 @@ function RenderComic() {
   };
   return (
     <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1}>
+      <div className="slider">
+        <input
+          type="range"
+          name="speed"
+          min="1"
+          max={(maxPage||1)-1}
+          step="2"
+          value={page}
+          onPointerUp={({currentTarget: {value}})=>onClick(Number(value))}
+          onChange={({target:{value}})=>setPage(Number(value))}
+        />
+      </div>
       <div className="page">
         <div className="canvas-wrapper">
           <div className="back send" onClick={()=> onClick(page - 2)}>
