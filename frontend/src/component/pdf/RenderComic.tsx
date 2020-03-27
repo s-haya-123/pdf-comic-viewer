@@ -90,32 +90,42 @@ function RenderComic() {
     e.stopPropagation();
     onClick(Number(e.currentTarget.value));
   }
+  const arrowPointUp = (e: React.MouseEvent, page: number ) => {
+    e.stopPropagation();
+    onClick(page);
+  }
   return (
     <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
       {
         showPageOperator &&
-          <div className="slider">
-            <input
-              type="range"
-              name="speed"
-              min="1"
-              max={(maxPage||1)-1}
-              step="2"
-              value={page}
-              onPointerUp={(e)=>sliderPointUp(e)}
-              onChange={({target:{value}})=>setPage(Number(value))}
-            />
-          </div>
+          [
+            <div className="slider" key='0'>
+              <input
+                type="range"
+                name="speed"
+                min="1"
+                max={(maxPage||1)-1}
+                step="2"
+                value={page}
+                onPointerUp={(e)=>sliderPointUp(e)}
+                onChange={({target:{value}})=>setPage(Number(value))}
+              />
+            </div>,
+            <div className="info" key='1'>
+              <div className="info-content"> title</div>
+              <div className="info-content">{page} / {maxPage}</div>
+            </div>
+          ]
       }
       <div className="page">
         <div className="canvas-wrapper">
-          <div className="back send" onClick={()=> onClick(page - 2)}>
+          <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2)}>
             <FontAwesomeIcon icon={faChevronRight}/>
           </div>
           <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
         </div>
         <div className="canvas-wrapper">
-          <div className="next send"  onClick={()=> onClick(page + 2)}>
+          <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2)}>
             <FontAwesomeIcon icon={faChevronLeft}/>
           </div>
           <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>

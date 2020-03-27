@@ -39,6 +39,21 @@
     background: white;
     opacity: 0.9;
 }
+.info {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+    top: 0px;
+    padding-bottom: 33px;
+    background: white;
+    opacity: 0.9;
+    display: flex;
+    padding: 10px;
+}
+.info-content {
+    margin-left: auto;
+    padding-right: 30px;
+}
 input {
     width: 90%;
     direction: rtl;
