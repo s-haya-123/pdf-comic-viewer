@@ -1,14 +1,17 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-
+import { BrowserRouter, Route, Link } from "react-router-dom";
 import RenderComic from './component/pdf/RenderComic';
+import Main from './component/main/main';
 
 function App() {
   return (
-    <div className="App">
-      <RenderComic></RenderComic>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Route path="/" component={Main}/>
+        <Route path="/page" component={RenderComic}/>
+      </div>
+    </BrowserRouter>
   );
 }
 
