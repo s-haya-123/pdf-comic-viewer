@@ -1,9 +1,8 @@
 import React from 'react';
 
-// TODO: perfomance tuning
 function Main() {
   return (
-    <div></div>
+    <div>main</div>
   );
 }
 export default Main;

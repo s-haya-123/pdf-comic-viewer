@@ -8,7 +8,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        <Route path="/" component={Main}/>
+        <Route exact path="/" component={Main}/>
         <Route path="/page" component={RenderComic}/>
       </div>
     </BrowserRouter>

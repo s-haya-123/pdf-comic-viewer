@@ -3,7 +3,7 @@ import { getPDFFactory, getPDFViewport, PDFFactory } from '../../readPdf';
 import './RenderComic.css';
 import { PDFPageProxy } from 'pdfjs-dist';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight,faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight,faChevronLeft, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
 // TODO: perfomance tuning
 function RenderComic() {
@@ -94,6 +94,9 @@ function RenderComic() {
     e.stopPropagation();
     onClick(page);
   }
+  const stop = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  }
   return (
     <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
       {
@@ -111,7 +114,8 @@ function RenderComic() {
                 onChange={({target:{value}})=>setPage(Number(value))}
               />
             </div>,
-            <div className="info" key='1'>
+            <div className="info" key='1' onPointerUp={e => e.stopPropagation()}>
+              <a href="/"><FontAwesomeIcon icon={faArrowLeft}/></a>
               <div className="info-content"> title</div>
               <div className="info-content">{page} / {maxPage}</div>
             </div>
