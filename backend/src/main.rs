@@ -1,6 +1,9 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate rocket;
+mod pdfs;
+
+use pdfs::*;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -8,5 +11,5 @@ fn index() -> &'static str {
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![index]).launch();
+    rocket::ignite().mount("/", routes![index, pdf]).launch();
 }
