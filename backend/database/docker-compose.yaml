@@ -1,0 +1,17 @@
+version: '2.0'
+services:
+  appdb:
+    image: postgres:10
+    container_name: "appdb"
+    environment:
+      - POSTGRES_USER=pdf
+      - POSTGRES_PASSWORD=pdf
+      - POSTGRES_DB=pdf
+    ports:
+      - "15432:5432"
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+volumes:
+  database:
+    driver: local
