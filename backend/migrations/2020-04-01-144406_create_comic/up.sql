@@ -4,5 +4,6 @@ CREATE TABLE comic (
     title text NOT null,
     thumbnail text,
     pdf text,
-    tag text[]
+    tag text[],
+    folder_id text
 );
