@@ -1,5 +1,5 @@
-
-#[derive(Queryable)]
+use serde::{Deserialize, Serialize};
+#[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct Comic {
     pub id: i32,
     pub author: Option<String>,
