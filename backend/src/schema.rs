@@ -6,6 +6,7 @@ table! {
         thumbnail -> Nullable<Text>,
         pdf -> Nullable<Text>,
         tag -> Nullable<Array<Text>>,
+        current_page -> Nullable<Int4>,
         folder_id -> Nullable<Text>,
     }
 }

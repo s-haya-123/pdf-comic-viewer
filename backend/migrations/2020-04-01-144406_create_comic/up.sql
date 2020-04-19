@@ -5,5 +5,6 @@ CREATE TABLE comic (
     thumbnail text,
     pdf text,
     tag text[],
+    current_page integer,
     folder_id text
 );
