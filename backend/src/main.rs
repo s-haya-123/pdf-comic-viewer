@@ -11,6 +11,33 @@ use std::path::Path;
 use diesel::prelude::*;
 use rocket_contrib::json::Json;
 use rocket::response::NamedFile;
+extern crate rocket_cors;
+
+use rocket::http::Method;
+use rocket_cors::{
+    AllowedHeaders, AllowedOrigins, Error,
+    Cors, CorsOptions
+};
+
+fn make_cors() -> Cors {
+    let allowed_origins = AllowedOrigins::some_exact(&[
+        "http://localhost:3000",
+    ]);
+
+    CorsOptions {
+        allowed_origins,
+        allowed_methods: vec![Method::Get].into_iter().map(From::from).collect(),
+        allowed_headers: AllowedHeaders::some(&[
+            "Authorization",
+            "Accept",
+            "Access-Control-Allow-Origin",
+        ]),
+        allow_credentials: true,
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("error while building CORS")
+}
 
 #[get("/")]
 fn index() -> &'static str {
@@ -38,7 +65,9 @@ fn rocket() -> rocket::Rocket {
     .mount("/", routes![index])
     .mount("/pdf", routes![pdf_list, get_pdf])
     .mount("/thumbnail", routes![get_img])
+    .attach(make_cors())
 }
-fn main() {
+fn main() -> Result<(), Error>{
     rocket().launch();
+    Ok(())
 }

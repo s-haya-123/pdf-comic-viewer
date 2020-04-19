@@ -42,7 +42,7 @@ function RenderComic() {
     console.log(pageNumber)
   };
   useEffect(() => {
-    getPDFFactory(`${process.env.PUBLIC_URL}/assets/sample.pdf`).then(
+    getPDFFactory(`http://localhost:8000/pdf/sample`).then(
       async factory=>{
         await initCanvasSize(factory);
         setFactory(factory);
