@@ -16,8 +16,8 @@ use rocket::response::NamedFile;
 fn index() -> &'static str {
     "Hello, world!"
 }
-#[get("/pdf")]
-pub fn pdf() -> Json<Vec<Comic>> {
+#[get("/list")]
+pub fn pdf_list() -> Json<Vec<Comic>> {
     use schema::comic::dsl::*;
     let connection = establish_connection();
     let results = comic
@@ -26,9 +26,19 @@ pub fn pdf() -> Json<Vec<Comic>> {
     Json(results)
 }
 #[get("/<id>")]
-pub fn get_pdf(id: String) -> Option<NamedFile> {
-    NamedFile::open(Path::new("assets/sample.pdf")).ok()
+fn get_pdf(id: String) -> Option<NamedFile> {
+    NamedFile::open(Path::new(&format!("assets/pdf/{}.pdf", id))).ok()
+}
+#[get("/<id>")]
+fn get_img(id: String) -> Option<NamedFile> {
+    NamedFile::open(Path::new(&format!("assets/img/{}.jpg", id))).ok()
+}
+fn rocket() -> rocket::Rocket {
+    rocket::ignite()
+    .mount("/", routes![index])
+    .mount("/pdf", routes![pdf_list, get_pdf])
+    .mount("/thumbnail", routes![get_img])
 }
 fn main() {
-    rocket::ignite().mount("/", routes![index, pdf, get_pdf]).launch();
+    rocket().launch();
 }
