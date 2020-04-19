@@ -7,21 +7,11 @@ mod models;
 
 use backend::*;
 use models::*;
+use std::path::Path;
 use diesel::prelude::*;
 use rocket_contrib::json::Json;
-use serde::{Deserialize, Serialize};
+use rocket::response::NamedFile;
 
-
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PDF {
-    pub id: String,
-    pub author: String,
-    pub title: String,
-    pub thumbnail: String,
-    pub pdf: String,
-    pub tag: Vec<String>
-}
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
@@ -35,17 +25,10 @@ pub fn pdf() -> Json<Vec<Comic>> {
     .expect("Error loading posts");
     Json(results)
 }
-
+#[get("/<id>")]
+pub fn get_pdf(id: String) -> Option<NamedFile> {
+    NamedFile::open(Path::new("assets/sample.pdf")).ok()
+}
 fn main() {
-    use schema::comic::dsl::*;
-    let connection = establish_connection();
-    let results = comic
-    .load::<Comic>(&connection)
-    .expect("Error loading posts");
-    println!("Displaying {} posts", results.len());
-    for post in results {
-        println!("{}", post.title);
-        println!("----------\n");
-    }
-    rocket::ignite().mount("/", routes![index, pdf]).launch();
+    rocket::ignite().mount("/", routes![index, pdf, get_pdf]).launch();
 }
