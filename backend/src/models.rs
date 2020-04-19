@@ -7,5 +7,6 @@ pub struct Comic {
     pub thumbnail: Option<String>,
     pub pdf: Option<String>,
     pub tab: Option<Vec<String>>,
+    pub current_page: Option<i32>,
     pub folder_id: Option<String>
 }
