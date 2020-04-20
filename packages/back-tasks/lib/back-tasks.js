@@ -1,7 +1,5 @@
-'use strict';
-
-module.exports = backTasks;
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function backTasks() {
-    // TODO
 }
+exports.backTasks = backTasks;
