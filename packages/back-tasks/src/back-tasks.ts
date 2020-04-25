@@ -2,7 +2,7 @@ import { getPDFFactory, getPDFViewport } from './readPdfNode';
 import { createCanvas } from 'canvas';
 import { writeFile, readdir, rename } from 'fs';
 import { PDFRenderParams } from 'pdfjs-dist';
-import { Client,Pool } from 'pg';
+import { Pool } from 'pg';
 const pool = new Pool({
     user: 'pdf',
     host: 'localhost',
@@ -33,6 +33,13 @@ class CanvasFactory {
 }
 export async function backTasks(pdfPath: string, file: string, savePath: string) {
     const fileInPath = `${pdfPath}/${file}`;
+    const insertPromise = insertTitle(file);
+    const createCanvasPromise = createPDFCanvas(fileInPath);
+    const [insertResult, canvas] = await Promise.all([insertPromise, createCanvasPromise]);
+    writeFile(`${savePath}/${insertResult.id}.jpg`, canvas.toBuffer(), ()=>{});
+    rename(fileInPath, `${pdfPath}/${insertResult.id}.pdf`, ()=>{});
+}
+async function createPDFCanvas(fileInPath: string) {
     const factory = await getPDFFactory(fileInPath);
     const {width, height} = await factory.getPDFSize();
     const canvas = createCanvas(width, height);
@@ -40,16 +47,16 @@ export async function backTasks(pdfPath: string, file: string, savePath: string)
     const ctx = canvas.getContext('2d')!;
     const config = getPDFViewport(page, ctx);
     const canvasFactory = new CanvasFactory();
-    await ((page.render({...config, canvasFactory} as PDFRenderParams).promise as unknown) as Promise<void>);
-    const title = file.match(/(.*)\.pdf/);
-    const query = {
+    await ((page.render({...config, canvasFactory} as PDFRenderParams).promise as unknown) as Promise<void>);    
+    return canvas
+}
+async function insertTitle(fileName: string) {
+    const title = fileName.match(/(.*)\.pdf/);
+     const query = {
         text: 'insert into comic (title) values ($1) RETURNING id;',
-        values: [(title && title[1] || file)],
+        values: [(title && title[1] || fileName)],
       };
-    const res = await pool.query(query);
-    const insertResult = res.rows[0] as InsertResult;
-    writeFile(`${savePath}/${insertResult.id}.jpg`, canvas.toBuffer(), ()=>{});
-    rename(fileInPath, `${pdfPath}/${insertResult.id}.pdf`, ()=>{});
+    return (await pool.query(query)).rows[0] as InsertResult;
 }
 
 if (process.argv.length >= 2) {
