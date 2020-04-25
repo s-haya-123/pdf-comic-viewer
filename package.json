@@ -1,11 +1,15 @@
 {
   "devDependencies": {
-    "create-react-app": "^3.4.0",
-    "lerna": "^3.20.2"
+    "create-react-app": "^3.4.0"
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/back-tasks/**"
+    ]
+  },
   "private": true,
   "name": "pdf-comic-viewer"
 }

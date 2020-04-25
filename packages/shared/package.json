@@ -1,26 +1,6 @@
 {
   "name": "shared",
-  "version": "0.0.0",
-  "description": "> TODO: description",
-  "author": "s-haya-123 <ganbaru.wakenai@gmail.com>",
-  "homepage": "https://github.com/s-haya-123/pdf-comic-viewer#readme",
+  "version": "1.0.0",
   "license": "ISC",
-  "main": "lib/index.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
-  "files": [
-    "lib"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/s-haya-123/pdf-comic-viewer.git"
-  },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
-  "bugs": {
-    "url": "https://github.com/s-haya-123/pdf-comic-viewer/issues"
-  }
+  "main": "lib/index.js"
 }

@@ -1,6 +1,6 @@
 {
   "name": "back-tasks",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "> TODO: description",
   "author": "s-haya-123 <ganbaru.wakenai@gmail.com>",
   "homepage": "https://github.com/s-haya-123/pdf-comic-viewer#readme",
@@ -25,9 +25,10 @@
     "url": "https://github.com/s-haya-123/pdf-comic-viewer/issues"
   },
   "dependencies": {
-    "typescript": "~3.7.2",
-    "pdfjs-dist": "^2.2.228",
-    "shared": "0.0.0"
+    "canvas": "^2.6.1",
+    "pdfjs-dist": "^2.4.456",
+    "shared": "1.0.0",
+    "typescript": "~3.7.2"
   },
   "devDependencies": {
     "@types/pdfjs-dist": "^2.1.3",
