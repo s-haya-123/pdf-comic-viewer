@@ -10,7 +10,7 @@ const pool = new Pool({
     password: 'pdf',
     port: 15432,
 });
-interface InsertResult {
+interface IdResult {
     id: string;
 }
 class CanvasFactory {
@@ -56,21 +56,28 @@ async function insertTitle(fileName: string) {
         text: 'insert into comic (title) values ($1) RETURNING id;',
         values: [(title && title[1] || fileName)],
       };
-    return (await pool.query(query)).rows[0] as InsertResult;
+    return (await pool.query(query)).rows[0] as IdResult;
 }
-
+async function selectFiles() {
+    const query = 'select id from comic;';
+    return (await pool.query(query)).rows as IdResult[];
+}
 if (process.argv.length >= 2) {
     const path = process.argv[2];
     const savePath = process.argv[3];
-    readdir(process.argv[2], (err, files)=>{
-        if(err) {
-            console.log(err);
-            process.exit(-1);
-        }
-        files.forEach(file=>{
-            backTasks(path, file, savePath);
+    selectFiles().then(selectFiles=>{
+        readdir(process.argv[2], (err, files)=>{
+            if(err) {
+                console.log(err);
+                process.exit(-1);
+            }
+            files.forEach(file=>{
+                if(selectFiles.find(({id})=>`${id}.pdf` === file)) {
+                    return;
+                }
+                backTasks(path, file, savePath);
+            });
         });
-        console.log(files);
     });
 } else {
     console.log('required pdf files path');
