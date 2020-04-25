@@ -1,10 +1,8 @@
 table! {
     comic (id) {
-        id -> Int4,
+        id -> Uuid,
         author -> Nullable<Text>,
         title -> Text,
-        thumbnail -> Nullable<Text>,
-        pdf -> Nullable<Text>,
         tag -> Nullable<Array<Text>>,
         current_page -> Nullable<Int4>,
         folder_id -> Nullable<Text>,

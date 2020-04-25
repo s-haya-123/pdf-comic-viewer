@@ -8,8 +8,6 @@ pub struct PDF {
     pub id: String,
     pub author: String,
     pub title: String,
-    pub thumbnail: String,
-    pub pdf: String,
     pub tag: Vec<String>
 }
 

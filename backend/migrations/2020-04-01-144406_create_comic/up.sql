@@ -1,9 +1,7 @@
 CREATE TABLE comic (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v1(),
     author text,
     title text NOT null,
-    thumbnail text,
-    pdf text,
     tag text[],
     current_page integer,
     folder_id text
