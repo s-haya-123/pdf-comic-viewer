@@ -4,6 +4,7 @@ import './RenderComic.css';
 import { PDFPageProxy } from 'pdfjs-dist';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight,faChevronLeft, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { useParams } from 'react-router-dom';
 
 // TODO: perfomance tuning
 function RenderComic() {
@@ -15,7 +16,7 @@ function RenderComic() {
   const [maxPage, setMaxPage] = useState<number>();
   const [factory, setFactory] = useState<PDFFactory>();
   const [showPageOperator, setShowPageOperator] = useState(false);
-
+  const { id } = useParams();
   const getContext = (canvas: HTMLCanvasElement | OffscreenCanvas) => {
     return canvas.getContext('2d') as CanvasRenderingContext2D;
   };
@@ -42,7 +43,7 @@ function RenderComic() {
     console.log(pageNumber)
   };
   useEffect(() => {
-    getPDFFactory(`http://localhost:8000/pdf/sample`).then(
+    getPDFFactory(`http://localhost:8000/pdf/${id}`).then(
       async factory=>{
         await initCanvasSize(factory);
         setFactory(factory);

@@ -9,7 +9,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Route exact path="/" component={Main}/>
-        <Route path="/page" component={RenderComic}/>
+        <Route path="/page/:id" component={RenderComic}/>
       </div>
     </BrowserRouter>
   );

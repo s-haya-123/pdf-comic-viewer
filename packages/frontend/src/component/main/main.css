@@ -1,0 +1,7 @@
+.comic {
+    display: flex;
+    flex-direction: column;
+}
+img {
+    object-fit: contain;
+}
