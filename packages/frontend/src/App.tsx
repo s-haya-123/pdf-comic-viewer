@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import { BrowserRouter, Route } from "react-router-dom";
 import RenderComic from './component/pdf/RenderComic';
 import Main from './component/main/main';
 
@@ -9,7 +9,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Route exact path="/" component={Main}/>
-        <Route path="/page/:id" component={RenderComic}/>
+        <Route path="/page/:id/:title/:page" component={RenderComic}/>
       </div>
     </BrowserRouter>
   );

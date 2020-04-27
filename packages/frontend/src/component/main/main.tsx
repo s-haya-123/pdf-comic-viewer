@@ -15,7 +15,7 @@ function Main() {
     <div className="list">
       {list?.map(
         comic=>
-          <div className="comic" key={comic.id} onClick={()=>history.push(`/page/${comic.id}`)}>
+          <div className="comic" key={comic.id} onClick={()=>history.push(`/page/${comic.id}/${comic.title}/${(comic.current_page || 1)}`)}>
             {comic.title}
             <img src={`http://localhost:8000/thumbnail/${comic.id}`} alt="サムネイル"></img>
           </div>

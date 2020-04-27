@@ -16,7 +16,7 @@ function RenderComic() {
   const [maxPage, setMaxPage] = useState<number>();
   const [factory, setFactory] = useState<PDFFactory>();
   const [showPageOperator, setShowPageOperator] = useState(false);
-  const { id } = useParams();
+  const { id, title, page: startPage } = useParams();
   const getContext = (canvas: HTMLCanvasElement | OffscreenCanvas) => {
     return canvas.getContext('2d') as CanvasRenderingContext2D;
   };
@@ -24,7 +24,7 @@ function RenderComic() {
     const config = getPDFViewport(pdfPage, ctx, scale);
     pdfPage.render(config);
   }
-  const initCanvasSize = async (factory: PDFFactory) => {
+  const initCanvasSize = async (factory: PDFFactory, initPage = 1) => {
     const {width: originWidth, height: originHeight, pageNumber} = await factory.getPDFSize();
     const {innerWidth, innerHeight} = window;
     const originScale = (innerWidth / 2) / originWidth;
@@ -36,16 +36,16 @@ function RenderComic() {
     setScale(scale);
     setCanvasSize({ width, height });
     const pages = await Promise.all([
-      factory.getPage(1),
-      factory.getPage(2)
+      factory.getPage(initPage),
+      factory.getPage(initPage+1)
     ]);
     renderPDF(pages, scale);
-    console.log(pageNumber)
   };
   useEffect(() => {
+    setPage( Number(startPage));
     getPDFFactory(`http://localhost:8000/pdf/${id}`).then(
       async factory=>{
-        await initCanvasSize(factory);
+        await initCanvasSize(factory, Number(startPage));
         setFactory(factory);
     });
   },[]);
@@ -117,7 +117,7 @@ function RenderComic() {
             </div>,
             <div className="info" key='1' onPointerUp={e => e.stopPropagation()}>
               <a href="/"><FontAwesomeIcon icon={faArrowLeft}/></a>
-              <div className="info-content"> title</div>
+              <div className="info-content"> {title}</div>
               <div className="info-content">{page} / {maxPage}</div>
             </div>
           ]
