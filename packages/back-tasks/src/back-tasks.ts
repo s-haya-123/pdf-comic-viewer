@@ -72,7 +72,7 @@ if (process.argv.length >= 2) {
                 process.exit(-1);
             }
             files.forEach(file=>{
-                if(selectFiles.find(({id})=>`${id}.pdf` === file)) {
+                if( !file.match(/pdf/g) || selectFiles.find(({id})=>`${id}.pdf` === file)) {
                     return;
                 }
                 backTasks(path, file, savePath);
