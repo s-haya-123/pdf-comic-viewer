@@ -1,7 +1,22 @@
+.list {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100vh;
+}
 .comic {
     display: flex;
     flex-direction: column;
+    width: 25%;
+    height: 50%;
+    cursor: pointer;
+}
+.comic:hover {
+    color: orange;
+    box-shadow: 5px 5px 13px rgba(0,0,0,0.2);
 }
 img {
     object-fit: contain;
+    object-position: top;
+    padding: 15px;
+    max-height: 90%;
 }
