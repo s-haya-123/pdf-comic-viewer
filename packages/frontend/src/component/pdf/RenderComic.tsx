@@ -5,7 +5,7 @@ import { PDFPageProxy } from 'pdfjs-dist';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight,faChevronLeft, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { useParams } from 'react-router-dom';
-import { ComicStateContext, DispatchContext } from '../../App'
+import { ComicStateContext } from '../../state/comic';
 
 
 // TODO: perfomance tuning
@@ -20,7 +20,6 @@ function RenderComic() {
   const [showPageOperator, setShowPageOperator] = useState(false);
   const { id } = useParams();
   const { selectComic } = useContext(ComicStateContext);
-  const dispach = useContext(DispatchContext);
   const getContext = (canvas: HTMLCanvasElement | OffscreenCanvas) => {
     return canvas.getContext('2d') as CanvasRenderingContext2D;
   };

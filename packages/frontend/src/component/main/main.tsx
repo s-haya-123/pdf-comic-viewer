@@ -2,13 +2,14 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Comic } from '../../models/comic';
 import './main.css';
 import { useHistory } from 'react-router-dom';
-import { DispatchContext } from '../../App'
+import { DispatchContext } from '../../state/comic'
 
 function Main() {
   const [list, setList] = useState<Comic[]>();
   const dispatch = useContext(DispatchContext);
   const history = useHistory();
   useEffect(()=>{
+    dispatch({type: 'store'});
     fetch('http://localhost:8000/pdf/list')
       .then(res=>res.json())
       .then((json)=>setList(json));
