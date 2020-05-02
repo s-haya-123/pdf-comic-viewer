@@ -11,6 +11,7 @@ use std::path::Path;
 use diesel::prelude::*;
 use rocket_contrib::json::Json;
 use rocket::response::NamedFile;
+use uuid::Uuid;
 extern crate rocket_cors;
 
 use rocket::http::Method;
@@ -56,6 +57,17 @@ pub fn pdf_list() -> Json<Vec<Comic>> {
 fn get_pdf(id: String) -> Option<NamedFile> {
     NamedFile::open(Path::new(&format!("assets/pdf/{}.pdf", id))).ok()
 }
+#[patch("/<id>")]
+fn patch_pdf_info(id: String){
+    use schema::comic::dsl::{comic, title};
+    let connection = establish_connection();
+    let uuid = Uuid::parse_str(&id).unwrap();
+    let post = diesel::update(comic.find(uuid))
+        .set(title.eq("test"))
+        .get_result::<Comic>(&connection)
+        .expect(&format!("Unable to find post {}", id));
+    println!("Published post {}", post.title);
+}
 #[get("/<id>")]
 fn get_img(id: String) -> Option<NamedFile> {
     NamedFile::open(Path::new(&format!("assets/img/{}.jpg", id))).ok()
@@ -63,7 +75,7 @@ fn get_img(id: String) -> Option<NamedFile> {
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
     .mount("/", routes![index])
-    .mount("/pdf", routes![pdf_list, get_pdf])
+    .mount("/pdf", routes![pdf_list, get_pdf, patch_pdf_info])
     .mount("/thumbnail", routes![get_img])
     .attach(make_cors())
 }
