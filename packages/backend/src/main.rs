@@ -57,15 +57,17 @@ pub fn pdf_list() -> Json<Vec<Comic>> {
 fn get_pdf(id: String) -> Option<NamedFile> {
     NamedFile::open(Path::new(&format!("assets/pdf/{}.pdf", id))).ok()
 }
-#[patch("/<id>")]
-fn patch_pdf_info(id: String){
+#[patch("/info", data = "<comic_info>")]
+fn patch_pdf_info(comic_info: Json<Comic>){
     use schema::comic::dsl::{comic, title};
     let connection = establish_connection();
-    let uuid = Uuid::parse_str(&id).unwrap();
+    let uuid = comic_info.id;
+    let patch_title = &comic_info.title;
+    // let uuid = Uuid::parse_str(&id).unwrap();
     let post = diesel::update(comic.find(uuid))
-        .set(title.eq("test"))
+        .set(title.eq(patch_title))
         .get_result::<Comic>(&connection)
-        .expect(&format!("Unable to find post {}", id));
+        .expect(&format!("Unable to find post {}", uuid));
     println!("Published post {}", post.title);
 }
 #[get("/<id>")]
