@@ -59,3 +59,14 @@ input {
     direction: rtl;
     margin-top: 20px;
 }
+.menu {
+    margin-right: 30px;
+}
+.info-menu {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+}
+.render-wrapper {
+    position: relative;
+}

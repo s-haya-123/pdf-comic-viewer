@@ -3,9 +3,11 @@ import { getPDFFactory, getPDFViewport, PDFFactory } from '../../readPdf';
 import './RenderComic.css';
 import { PDFPageProxy } from 'pdfjs-dist';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight,faChevronLeft, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight,faChevronLeft, faArrowLeft, faBars } from '@fortawesome/free-solid-svg-icons'
 import { useParams } from 'react-router-dom';
-import { ComicStateContext } from '../../state/comic';
+import { ComicStateContext, DispatchContext } from '../../state/comic';
+import EditInfo from '../edit-info/editInfo';
+import { Comic } from '../../models/comic';
 
 
 // TODO: perfomance tuning
@@ -20,6 +22,7 @@ function RenderComic() {
   const [showPageOperator, setShowPageOperator] = useState(false);
   const { id } = useParams();
   const { selectComic } = useContext(ComicStateContext);
+  const dispatch = useContext(DispatchContext);
   const getContext = (canvas: HTMLCanvasElement | OffscreenCanvas) => {
     return canvas.getContext('2d') as CanvasRenderingContext2D;
   };
@@ -46,6 +49,10 @@ function RenderComic() {
   };
   useEffect(() => {
     const startPage = (selectComic?.current_page || 1);
+
+    !selectComic && fetch(`http://localhost:8000/info/${id}`)
+      .then(res=>res.json())
+      .then((json: Comic)=>dispatch({type: 'store', payload: json}));
     setPage( Number(startPage));
     getPDFFactory(`http://localhost:8000/pdf/${id}`).then(
       async factory=>{
@@ -99,47 +106,48 @@ function RenderComic() {
     e.stopPropagation();
     onClick(page);
   }
-  const stop = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  }
   return (
-    <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
-      {
-        showPageOperator &&
-          [
-            <div className="slider" key='0'>
-              <input
-                type="range"
-                name="speed"
-                min="1"
-                max={(maxPage||1)-1}
-                step="2"
-                value={page}
-                onPointerUp={(e)=>sliderPointUp(e)}
-                onChange={({target:{value}})=>setPage(Number(value))}
-              />
-            </div>,
-            <div className="info" key='1' onPointerUp={e => e.stopPropagation()}>
-              <a href="/"><FontAwesomeIcon icon={faArrowLeft}/></a>
-              <div className="info-content"> {selectComic?.title}</div>
-              <div className="info-content">{page} / {maxPage}</div>
+    <div className="render-wrapper">
+      <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
+        {
+          showPageOperator &&
+            [
+              <div className="slider" key='0'>
+                <input
+                  type="range"
+                  name="speed"
+                  min="1"
+                  max={(maxPage||1)-1}
+                  step="2"
+                  value={page}
+                  onPointerUp={(e)=>sliderPointUp(e)}
+                  onChange={({target:{value}})=>setPage(Number(value))}
+                />
+              </div>,
+              <div className="info" key='1' onPointerUp={e => e.stopPropagation()}>
+                <a href="/"><FontAwesomeIcon icon={faArrowLeft}/></a>
+                <div className="info-content"> {selectComic?.title}</div>
+                <div className="info-content">{page} / {maxPage}</div>
+                <div className="menu"><FontAwesomeIcon icon={faBars}/></div>
+              </div>
+            ]
+        }
+        <div className="page">
+          <div className="canvas-wrapper">
+            <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2)}>
+              <FontAwesomeIcon icon={faChevronRight}/>
             </div>
-          ]
-      }
-      <div className="page">
-        <div className="canvas-wrapper">
-          <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2)}>
-            <FontAwesomeIcon icon={faChevronRight}/>
+            <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
           </div>
-          <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
-        </div>
-        <div className="canvas-wrapper">
-          <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2)}>
-            <FontAwesomeIcon icon={faChevronLeft}/>
+          <div className="canvas-wrapper">
+            <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2)}>
+              <FontAwesomeIcon icon={faChevronLeft}/>
+            </div>
+            <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>
           </div>
-          <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>
         </div>
       </div>
+      <div className="info-menu"><EditInfo></EditInfo></div>
     </div>
   );
 }

@@ -11,10 +11,10 @@ use std::path::Path;
 use diesel::prelude::*;
 use rocket_contrib::json::Json;
 use rocket::response::NamedFile;
+use std::str::FromStr;
 use uuid::Uuid;
 extern crate rocket_cors;
 
-use rocket::http::Method;
 use rocket_cors::{
     AllowedHeaders, AllowedOrigins, Error,
     Cors, CorsOptions
@@ -27,7 +27,18 @@ fn make_cors() -> Cors {
 
     CorsOptions {
         allowed_origins,
-        allowed_methods: vec![Method::Get].into_iter().map(From::from).collect(),
+        allowed_methods: [
+            "POST",
+            "PATCH",
+            "PUT",
+            "DELETE",
+            "HEAD",
+            "OPTIONS",
+            "GET"
+        ]
+        .iter()
+        .map(|s| FromStr::from_str(s).unwrap())
+        .collect(),
         allowed_headers: AllowedHeaders::some(&[
             "Authorization",
             "Accept",
@@ -57,18 +68,28 @@ pub fn pdf_list() -> Json<Vec<Comic>> {
 fn get_pdf(id: String) -> Option<NamedFile> {
     NamedFile::open(Path::new(&format!("assets/pdf/{}.pdf", id))).ok()
 }
-#[patch("/info", data = "<comic_info>")]
-fn patch_pdf_info(comic_info: Json<Comic>){
-    use schema::comic::dsl::{comic, title};
+
+#[patch("/", data = "<comic_info>")]
+fn patch_comic_info(comic_info: Json<Comic>){
+    use schema::comic::dsl::{comic, title, author};
     let connection = establish_connection();
     let uuid = comic_info.id;
     let patch_title = &comic_info.title;
-    // let uuid = Uuid::parse_str(&id).unwrap();
     let post = diesel::update(comic.find(uuid))
-        .set(title.eq(patch_title))
+        .set((title.eq(patch_title), author.eq(&comic_info.author)))
         .get_result::<Comic>(&connection)
         .expect(&format!("Unable to find post {}", uuid));
     println!("Published post {}", post.title);
+}
+#[get("/<get_id>")]
+fn get_comic_info(get_id: String)-> Json<Comic> {
+    use schema::comic::dsl::*;
+    let uuid = Uuid::parse_str(&get_id).unwrap();
+    let connection = establish_connection();
+    let results = comic.filter(id.eq(uuid))
+    .first::<Comic>(&connection)
+    .expect("Error loading posts");
+    Json(results)
 }
 #[get("/<id>")]
 fn get_img(id: String) -> Option<NamedFile> {
@@ -77,7 +98,8 @@ fn get_img(id: String) -> Option<NamedFile> {
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
     .mount("/", routes![index])
-    .mount("/pdf", routes![pdf_list, get_pdf, patch_pdf_info])
+    .mount("/pdf", routes![pdf_list, get_pdf])
+    .mount("/info", routes![patch_comic_info, get_comic_info])
     .mount("/thumbnail", routes![get_img])
     .attach(make_cors())
 }
