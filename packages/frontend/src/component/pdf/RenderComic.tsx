@@ -47,6 +47,13 @@ function RenderComic() {
     ]);
     renderPDF(pages, scale);
   };
+  const resizeFunc = () =>{
+    factory && initCanvasSize(factory, page);
+  }
+  useEffect(()=>{
+    window.addEventListener('resize', resizeFunc);
+    return () => window.removeEventListener('resize', resizeFunc);
+  })
   useEffect(() => {
     const startPage = (selectComic?.current_page || 1);
 
@@ -107,8 +114,8 @@ function RenderComic() {
     onClick(page);
   }
   return (
-    <div className="render-wrapper">
-      <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
+    <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
+      <div className="info-wrapper">
         {
           showPageOperator &&
             [
@@ -126,28 +133,28 @@ function RenderComic() {
               </div>,
               <div className="info" key='1' onPointerUp={e => e.stopPropagation()}>
                 <a href="/"><FontAwesomeIcon icon={faArrowLeft}/></a>
-                <div className="info-content"> {selectComic?.title}</div>
+                <div className="info-content"> {(selectComic?.title || 'タイトル未設定')}</div>
                 <div className="info-content">{page} / {maxPage}</div>
                 <div className="menu"><FontAwesomeIcon icon={faBars}/></div>
               </div>
             ]
         }
-        <div className="page">
-          <div className="canvas-wrapper">
-            <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2)}>
-              <FontAwesomeIcon icon={faChevronRight}/>
-            </div>
-            <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
+        <div className="info-menu"><EditInfo></EditInfo></div>
+      </div>
+      <div className="page">
+        <div className="canvas-wrapper">
+          <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2)}>
+            <FontAwesomeIcon icon={faChevronRight}/>
           </div>
-          <div className="canvas-wrapper">
-            <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2)}>
-              <FontAwesomeIcon icon={faChevronLeft}/>
-            </div>
-            <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>
+          <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
+        </div>
+        <div className="canvas-wrapper">
+          <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2)}>
+            <FontAwesomeIcon icon={faChevronLeft}/>
           </div>
+          <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>
         </div>
       </div>
-      <div className="info-menu"><EditInfo></EditInfo></div>
     </div>
   );
 }
