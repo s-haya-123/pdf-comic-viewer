@@ -11,17 +11,17 @@ type Action = {
     payload: any;
 };
 export function reducer(state: ComicState, action: Action): ComicState {
-switch (action.type) {
-    case 'reset': {
-    return initialState;
+    switch (action.type) {
+        case 'reset': {
+            return initialState;
+        }
+        case 'store': {
+            return { ...state, selectComic: action.payload }
+        }
+        default: {
+            return state;
+        }
     }
-    case 'store': {
-    return { ...state, selectComic: action.payload }
-    }
-    default: {
-    return state;
-    }
-}
 }
 export const ComicStateContext = React.createContext<ComicState>(null as any);
 export const DispatchContext = React.createContext<Dispatch<any>>(null as any);

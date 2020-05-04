@@ -5,16 +5,18 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import './editInfo.css';
 import { CloseAction } from '../pdf/RenderComic';
+import { useToasts } from 'react-toast-notifications';
 
 function EditInfo() {
     const { selectComic } = useContext(ComicStateContext);
     const [ comicInfo, setComicInfo ] = useState(selectComic);
+    const { addToast } = useToasts()
     const closeAction = useContext(CloseAction);
     const save = ()=>{
         fetch('http://localhost:8000/info',
             { method: "PATCH", body: JSON.stringify(comicInfo)}
         ).then(res=>{
-            console.log(res)
+            addToast('Saved Successfully', { appearance: 'success' })
         })
     }
     const setInfo = (key: keyof Comic, value: string) => {
