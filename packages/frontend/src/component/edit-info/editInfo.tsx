@@ -10,7 +10,7 @@ import { useToasts } from 'react-toast-notifications';
 function EditInfo() {
     const { selectComic } = useContext(ComicStateContext);
     const [ comicInfo, setComicInfo ] = useState(selectComic);
-    const { addToast } = useToasts()
+    const { addToast } = useToasts();
     const closeAction = useContext(CloseAction);
     const save = ()=>{
         fetch('http://localhost:8000/info',

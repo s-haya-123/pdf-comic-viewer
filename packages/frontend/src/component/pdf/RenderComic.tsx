@@ -68,7 +68,7 @@ function RenderComic() {
         setFactory(factory);
     });
   },[]);
-  const onClick = async (page: number) => {
+  const onClick = async (page: number, comic: Comic) => {
     if (!factory || !scale || !maxPage || page < 0 || page > maxPage ) {
       return ;
     }
@@ -82,6 +82,11 @@ function RenderComic() {
     const pages = await Promise.all(nextPromiseAll);
     renderPDF(pages, scale);
     setPage(page);
+    fetch('http://localhost:8000/info',
+      { method: "PATCH", body: JSON.stringify({...comic, current_page: page})}
+    ).then(res=>{
+      console.log(page);
+    })
   };
   const renderPDF =
   (
@@ -98,25 +103,25 @@ function RenderComic() {
         renderPage(pdfPages[1], ctx2, scale);
       }
   }
-  const onkeypress = (e: React.KeyboardEvent) => {
+  const onkeypress = (e: React.KeyboardEvent, comic: Comic) => {
     if(e.key === 'ArrowLeft') {
-      onClick(page + 2);
+      onClick(page + 2, comic);
     }
     if(e.key === 'ArrowRight') {
-      onClick(page - 2);
+      onClick(page - 2, comic);
     }
   };
-  const sliderPointUp = (e:React.PointerEvent<HTMLInputElement>) => {
+  const sliderPointUp = (e:React.PointerEvent<HTMLInputElement>, comic: Comic) => {
     e.stopPropagation();
-    onClick(Number(e.currentTarget.value));
+    onClick(Number(e.currentTarget.value),comic);
   }
-  const arrowPointUp = (e: React.MouseEvent, page: number ) => {
+  const arrowPointUp = (e: React.MouseEvent, page: number, comic: Comic) => {
     e.stopPropagation();
-    onClick(page);
+    onClick(page, comic);
   }
   return (
     <div className="render-wrapper">
-      <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
+      <div className="page-wrapper" onKeyDown={e => onkeypress(e, selectComic!)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
         <div className="info-wrapper">
           {
             showPageOperator &&
@@ -129,7 +134,7 @@ function RenderComic() {
                     max={(maxPage||1)-1}
                     step="2"
                     value={page}
-                    onPointerUp={(e)=>sliderPointUp(e)}
+                    onPointerUp={(e)=>sliderPointUp(e, selectComic!)}
                     onChange={({target:{value}})=>setPage(Number(value))}
                   />
                 </div>,
@@ -146,13 +151,13 @@ function RenderComic() {
         </div>
         <div className="page">
           <div className="canvas-wrapper">
-            <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2)}>
+            <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2, selectComic!)}>
               <FontAwesomeIcon icon={faChevronRight}/>
             </div>
             <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
           </div>
           <div className="canvas-wrapper">
-            <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2)}>
+            <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2, selectComic!)}>
               <FontAwesomeIcon icon={faChevronLeft}/>
             </div>
             <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>

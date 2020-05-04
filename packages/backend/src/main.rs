@@ -71,12 +71,12 @@ fn get_pdf(id: String) -> Option<NamedFile> {
 
 #[patch("/", data = "<comic_info>")]
 fn patch_comic_info(comic_info: Json<Comic>){
-    use schema::comic::dsl::{comic, title, author};
+    use schema::comic::dsl::{comic, title, author, current_page};
     let connection = establish_connection();
     let uuid = comic_info.id;
     let patch_title = &comic_info.title;
     let post = diesel::update(comic.find(uuid))
-        .set((title.eq(patch_title), author.eq(&comic_info.author)))
+        .set((title.eq(patch_title), author.eq(&comic_info.author), current_page.eq(&comic_info.current_page)))
         .get_result::<Comic>(&connection)
         .expect(&format!("Unable to find post {}", uuid));
     println!("Published post {}", post.title);
