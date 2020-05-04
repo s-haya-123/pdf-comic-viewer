@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState, useContext, createContext } from 'react';
 import { getPDFFactory, getPDFViewport, PDFFactory } from '../../readPdf';
 import './RenderComic.css';
 import { PDFPageProxy } from 'pdfjs-dist';
@@ -9,7 +9,7 @@ import { ComicStateContext, DispatchContext } from '../../state/comic';
 import EditInfo from '../edit-info/editInfo';
 import { Comic } from '../../models/comic';
 
-
+export const CloseAction = createContext<()=>void>(null as any);
 // TODO: perfomance tuning
 function RenderComic() {
   const canvasRefRight = useRef(null);
@@ -20,6 +20,7 @@ function RenderComic() {
   const [maxPage, setMaxPage] = useState<number>();
   const [factory, setFactory] = useState<PDFFactory>();
   const [showPageOperator, setShowPageOperator] = useState(false);
+  const [isShowMenu, setIsShowMenu] = useState(false);
   const { id } = useParams();
   const { selectComic } = useContext(ComicStateContext);
   const dispatch = useContext(DispatchContext);
@@ -53,7 +54,7 @@ function RenderComic() {
   useEffect(()=>{
     window.addEventListener('resize', resizeFunc);
     return () => window.removeEventListener('resize', resizeFunc);
-  })
+  });
   useEffect(() => {
     const startPage = (selectComic?.current_page || 1);
 
@@ -114,47 +115,58 @@ function RenderComic() {
     onClick(page);
   }
   return (
-    <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
-      <div className="info-wrapper">
-        {
-          showPageOperator &&
-            [
-              <div className="slider" key='0'>
-                <input
-                  type="range"
-                  name="speed"
-                  min="1"
-                  max={(maxPage||1)-1}
-                  step="2"
-                  value={page}
-                  onPointerUp={(e)=>sliderPointUp(e)}
-                  onChange={({target:{value}})=>setPage(Number(value))}
-                />
-              </div>,
-              <div className="info" key='1' onPointerUp={e => e.stopPropagation()}>
-                <a href="/"><FontAwesomeIcon icon={faArrowLeft}/></a>
-                <div className="info-content"> {(selectComic?.title || 'タイトル未設定')}</div>
-                <div className="info-content">{page} / {maxPage}</div>
-                <div className="menu"><FontAwesomeIcon icon={faBars}/></div>
-              </div>
-            ]
+    <div className="render-wrapper">
+      <div className="page-wrapper" onKeyDown={e => onkeypress(e)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
+        <div className="info-wrapper">
+          {
+            showPageOperator &&
+              [
+                <div className="slider" key='0'>
+                  <input
+                    type="range"
+                    name="speed"
+                    min="1"
+                    max={(maxPage||1)-1}
+                    step="2"
+                    value={page}
+                    onPointerUp={(e)=>sliderPointUp(e)}
+                    onChange={({target:{value}})=>setPage(Number(value))}
+                  />
+                </div>,
+                <div className="info" key='1' onPointerUp={e => e.stopPropagation()}>
+                  <a href="/"><FontAwesomeIcon icon={faArrowLeft}/></a>
+                  <div className="info-content"> {(selectComic?.title || 'タイトル未設定')}</div>
+                  <div className="info-content">{page} / {maxPage}</div>
+                  {
+                    !isShowMenu &&<div className="menu" onClick={()=>setIsShowMenu(!isShowMenu)}><FontAwesomeIcon icon={faBars}/></div>
+                  }
+                </div>
+              ]
+          }
+        </div>
+        <div className="page">
+          <div className="canvas-wrapper">
+            <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2)}>
+              <FontAwesomeIcon icon={faChevronRight}/>
+            </div>
+            <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
+          </div>
+          <div className="canvas-wrapper">
+            <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2)}>
+              <FontAwesomeIcon icon={faChevronLeft}/>
+            </div>
+            <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>
+          </div>
+        </div>
+      </div>
+        { 
+          isShowMenu &&
+            <div className="info-menu">
+              <CloseAction.Provider value={()=>setIsShowMenu(false)}>
+                <EditInfo></EditInfo>
+              </CloseAction.Provider>
+            </div>
         }
-        <div className="info-menu"><EditInfo></EditInfo></div>
-      </div>
-      <div className="page">
-        <div className="canvas-wrapper">
-          <div className="back send" onPointerUp={e=> arrowPointUp(e, page - 2)}>
-            <FontAwesomeIcon icon={faChevronRight}/>
-          </div>
-          <canvas className="canvas" ref={canvasRefRight} width={canvasWidth} height={canvasHeight}/>
-        </div>
-        <div className="canvas-wrapper">
-          <div className="next send"  onPointerUp={e=> arrowPointUp(e, page + 2)}>
-            <FontAwesomeIcon icon={faChevronLeft}/>
-          </div>
-          <canvas className="canvas" ref={canvasRefLeft} width={canvasWidth} height={canvasHeight}/>
-        </div>
-      </div>
     </div>
   );
 }

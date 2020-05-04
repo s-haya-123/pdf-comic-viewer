@@ -1,12 +1,17 @@
 import React, { useState, useContext } from 'react';
 import { ComicStateContext } from '../../state/comic';
 import { Comic } from '../../../../shared/lib/comic';
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import './editInfo.css';
+import { CloseAction } from '../pdf/RenderComic';
 
 function EditInfo() {
     const { selectComic } = useContext(ComicStateContext);
     const [ comicInfo, setComicInfo ] = useState(selectComic);
+    const closeAction = useContext(CloseAction);
     const save = ()=>{
-        fetch('http://localhost:8000/pdf/info',
+        fetch('http://localhost:8000/info',
             { method: "PATCH", body: JSON.stringify(comicInfo)}
         ).then(res=>{
             console.log(res)
@@ -16,10 +21,13 @@ function EditInfo() {
         setComicInfo({...comicInfo, [key]: value} as Comic)
     }
     return (
-      <div>
+      <div className="info-wrapper">
+        <div className="close" onClick={()=> closeAction()}><FontAwesomeIcon icon={faTimes} size="lg"/></div>
+        <div>
             <input defaultValue={(selectComic?.title || '')} onChange={(event)=>setInfo('title', event.target.value)}></input>
             <input defaultValue={(selectComic?.author || '')} onChange={(event)=>setInfo('author', event.target.value)}></input>
             <button onClick={save}>決定</button>
+        </div>
       </div>
     );
 }
