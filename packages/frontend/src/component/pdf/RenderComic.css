@@ -54,7 +54,7 @@
     margin-left: auto;
     padding-right: 30px;
 }
-input {
+.input-bar {
     width: 90%;
     direction: rtl;
     margin-top: 20px;

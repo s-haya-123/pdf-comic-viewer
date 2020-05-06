@@ -128,6 +128,7 @@ function RenderComic() {
               [
                 <div className="slider" key='0'>
                   <input
+                    className="input-bar"
                     type="range"
                     name="speed"
                     min="1"

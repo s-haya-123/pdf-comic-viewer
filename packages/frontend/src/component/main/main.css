@@ -20,3 +20,8 @@ img {
     padding: 15px;
     max-height: 90%;
 }
+.search-input {
+    width: 90%;
+    height: 1.5rem;
+    margin: 11px;
+}
