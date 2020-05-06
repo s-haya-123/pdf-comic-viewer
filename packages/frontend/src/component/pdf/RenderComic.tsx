@@ -36,9 +36,9 @@ function RenderComic() {
     const {innerWidth, innerHeight} = window;
     const originScale = (innerWidth / 2) / originWidth;
     const scaledHeight = originHeight * originScale;
-    const width = innerWidth / 2;
     const height = scaledHeight < innerHeight ? scaledHeight : innerHeight -5;
     const scale = scaledHeight < innerHeight ? originScale : (innerHeight / originHeight);
+    const width = originWidth * scale;
     setMaxPage(pageNumber);
     setScale(scale);
     setCanvasSize({ width, height });
