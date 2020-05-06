@@ -27,9 +27,9 @@ function RenderComic() {
   const getContext = (canvas: HTMLCanvasElement | OffscreenCanvas) => {
     return canvas.getContext('2d') as CanvasRenderingContext2D;
   };
-  const renderPage = (pdfPage: PDFPageProxy, ctx: CanvasRenderingContext2D, scale = 1) => {
+  const renderPage = (pdfPage: PDFPageProxy, ctx: CanvasRenderingContext2D, scale = 1): Promise<void> => {
     const config = getPDFViewport(pdfPage, ctx, scale);
-    pdfPage.render(config);
+    return (pdfPage.render(config).promise as unknown) as Promise<void>;
   }
   const initCanvasSize = async (factory: PDFFactory, initPage = 1) => {
     const {width: originWidth, height: originHeight, pageNumber} = await factory.getPDFSize();
@@ -47,6 +47,19 @@ function RenderComic() {
       factory.getPage(initPage+1)
     ]);
     renderPDF(pages, scale);
+  };
+  const prefetchPDF = async (factory: PDFFactory) => {
+    const { pageNumber } = await factory.getPDFSize();
+    let pagesPromis = [];
+    for(let i =1; i<= pageNumber; i++) {
+      pagesPromis.push(factory.getPage(i))
+    }
+    const pages = await Promise.all(pagesPromis);
+    const canvas = document.createElement('canvas');
+    const ctx = getContext(canvas as any);
+    for(let page of pages) {
+      await renderPage(page, ctx, scale);
+    }
   };
   const resizeFunc = () =>{
     factory && initCanvasSize(factory, page);
@@ -66,6 +79,7 @@ function RenderComic() {
       async factory=>{
         await initCanvasSize(factory, Number(startPage));
         setFactory(factory);
+        prefetchPDF(factory);
     });
   },[]);
   const onClick = async (page: number, comic: Comic) => {
@@ -84,9 +98,7 @@ function RenderComic() {
     setPage(page);
     fetch('http://localhost:8000/info',
       { method: "PATCH", body: JSON.stringify({...comic, current_page: page})}
-    ).then(res=>{
-      console.log(page);
-    })
+    );
   };
   const renderPDF =
   (
