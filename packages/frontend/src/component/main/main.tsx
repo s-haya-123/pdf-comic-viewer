@@ -20,10 +20,8 @@ function Main() {
       });
   }, []);
   const searchComic = ({ target : { value }}: React.ChangeEvent<HTMLInputElement>, targetList?: Comic[]) => {
-    const messages = value.replace('　',' ').split(/ +/);
-    console.log(originList && JSON.stringify(originList[0]));
-    const filteredList = targetList?.filter(comic=>JSON.stringify(comic).indexOf(messages[0]) >= 0);
-    console.log(filteredList);
+    const messages = value.trimEnd().replace('　',' ').split(/ +/);
+    const filteredList = targetList?.filter(comic=>messages.filter(message=>JSON.stringify(comic).indexOf(message) >= 0).length === messages.length);
     filteredList && setList(filteredList);
   };
   return (
