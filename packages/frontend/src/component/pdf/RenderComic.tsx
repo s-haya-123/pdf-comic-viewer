@@ -24,6 +24,27 @@ function RenderComic() {
   const { id } = useParams();
   const { selectComic } = useContext(ComicStateContext);
   const dispatch = useContext(DispatchContext);
+  const divRef = useRef(null);
+
+  useEffect(()=>{
+    window.addEventListener('resize', resizeFunc);
+    return () => window.removeEventListener('resize', resizeFunc);
+  });
+  useEffect(() => {
+    const startPage = (selectComic?.current_page || 1);
+
+    !selectComic && fetch(`http://localhost:8000/info/${id}`)
+      .then(res=>res.json())
+      .then((json: Comic)=>dispatch({type: 'store', payload: json}));
+    setPage( Number(startPage));
+    getPDFFactory(`http://localhost:8000/pdf/${id}`).then(
+      async factory=>{
+        await initCanvasSize(factory, Number(startPage));
+        setFactory(factory);
+        prefetchPDF(factory);
+    });
+    (divRef?.current as any ).focus();
+  },[]);
   const getContext = (canvas: HTMLCanvasElement | OffscreenCanvas) => {
     return canvas.getContext('2d') as CanvasRenderingContext2D;
   };
@@ -64,24 +85,6 @@ function RenderComic() {
   const resizeFunc = () =>{
     factory && initCanvasSize(factory, page);
   }
-  useEffect(()=>{
-    window.addEventListener('resize', resizeFunc);
-    return () => window.removeEventListener('resize', resizeFunc);
-  });
-  useEffect(() => {
-    const startPage = (selectComic?.current_page || 1);
-
-    !selectComic && fetch(`http://localhost:8000/info/${id}`)
-      .then(res=>res.json())
-      .then((json: Comic)=>dispatch({type: 'store', payload: json}));
-    setPage( Number(startPage));
-    getPDFFactory(`http://localhost:8000/pdf/${id}`).then(
-      async factory=>{
-        await initCanvasSize(factory, Number(startPage));
-        setFactory(factory);
-        prefetchPDF(factory);
-    });
-  },[]);
   const onClick = async (page: number, comic: Comic) => {
     if (!factory || !scale || !maxPage || page < 0 || page > maxPage ) {
       return ;
@@ -132,8 +135,13 @@ function RenderComic() {
     onClick(page, comic);
   }
   return (
-    <div className="render-wrapper">
-      <div className="page-wrapper" onKeyDown={e => onkeypress(e, selectComic!)} tabIndex={-1} onPointerUp={()=>setShowPageOperator(!showPageOperator)}>
+    <div
+      className="render-wrapper"
+      onKeyDown={e => onkeypress(e, selectComic!)} tabIndex={-1}
+      onPointerUp={()=>setShowPageOperator(!showPageOperator)}
+      ref={divRef}
+    >
+      <div className="page-wrapper">
         <div className="info-wrapper">
           {
             showPageOperator &&
