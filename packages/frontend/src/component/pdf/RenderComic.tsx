@@ -10,7 +10,7 @@ import EditInfo from '../edit-info/editInfo';
 import { Comic } from '../../models/comic';
 
 export const CloseAction = createContext<()=>void>(null as any);
-// TODO: perfomance tuning
+
 function RenderComic() {
   const canvasRefRight = useRef(null);
   const canvasRefLeft = useRef(null);
@@ -33,11 +33,11 @@ function RenderComic() {
   useEffect(() => {
     const startPage = (selectComic?.current_page || 1);
 
-    !selectComic && fetch(`http://localhost:8000/info/${id}`)
+    !selectComic && fetch(`${process.env.REACT_APP_SERVER}/info/${id}`)
       .then(res=>res.json())
       .then((json: Comic)=>dispatch({type: 'store', payload: json}));
     setPage( Number(startPage));
-    getPDFFactory(`http://localhost:8000/pdf/${id}`).then(
+    getPDFFactory(`${process.env.REACT_APP_SERVER}/pdf/${id}`).then(
       async factory=>{
         await initCanvasSize(factory, Number(startPage));
         setFactory(factory);
@@ -99,7 +99,7 @@ function RenderComic() {
     const pages = await Promise.all(nextPromiseAll);
     renderPDF(pages, scale);
     setPage(page);
-    fetch('http://localhost:8000/info',
+    fetch(`${process.env.REACT_APP_SERVER}/info`,
       { method: "PATCH", body: JSON.stringify({...comic, current_page: page})}
     );
   };

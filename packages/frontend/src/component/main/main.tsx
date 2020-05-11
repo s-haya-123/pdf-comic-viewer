@@ -11,8 +11,9 @@ function Main() {
   const dispatch = useContext(DispatchContext);
   const history = useHistory();
   useEffect(()=>{
+    console.log(process.env)
     dispatch({type: 'store'});
-    fetch('http://localhost:8000/pdf/list')
+    fetch(`${process.env.REACT_APP_SERVER}/pdf/list`)
       .then(res=>res.json())
       .then((json)=>{
         setList(json);
@@ -37,7 +38,7 @@ function Main() {
                 history.push(`/page/${comic.id}`);
             }}>
               {comic.title}
-              <img src={`http://localhost:8000/thumbnail/${comic.id}`} alt="サムネイル"></img>
+              <img src={`${process.env.REACT_APP_SERVER}/thumbnail/${comic.id}`} alt="サムネイル"></img>
             </div>
         )}
       </div>
