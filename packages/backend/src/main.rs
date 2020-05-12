@@ -23,6 +23,7 @@ use rocket_cors::{
 fn make_cors() -> Cors {
     let allowed_origins = AllowedOrigins::some_exact(&[
         "http://localhost:3000",
+        "http://192.168.43.10"
     ]);
 
     CorsOptions {
@@ -55,11 +56,14 @@ fn make_cors() -> Cors {
 fn index() -> &'static str {
     "Hello, world!"
 }
-#[get("/list")]
-pub fn pdf_list() -> Json<Vec<Comic>> {
+#[get("/list?<limit>&<page>")]
+pub fn pdf_list(limit: i64, page: i64) -> Json<Vec<Comic>> {
     use schema::comic::dsl::*;
     let connection = establish_connection();
     let results = comic
+    .order_by(id.asc())
+    .limit(limit)
+    .offset(limit * (page - 1))
     .load::<Comic>(&connection)
     .expect("Error loading posts");
     Json(results)
