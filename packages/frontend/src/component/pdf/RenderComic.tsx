@@ -35,7 +35,7 @@ function RenderComic() {
 
     !selectComic && fetch(`${process.env.REACT_APP_SERVER}/info/${id}`)
       .then(res=>res.json())
-      .then((json: Comic)=>dispatch({type: 'store', payload: json}));
+      .then((json: Comic)=>dispatch({type: 'storeComic', payload: json}));
     setPage( Number(startPage));
     getPDFFactory(`${process.env.REACT_APP_SERVER}/pdf/${id}`).then(
       async factory=>{

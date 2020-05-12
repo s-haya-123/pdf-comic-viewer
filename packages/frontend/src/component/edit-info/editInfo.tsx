@@ -13,7 +13,7 @@ function EditInfo() {
     const { addToast } = useToasts();
     const closeAction = useContext(CloseAction);
     const save = ()=>{
-        fetch('http://localhost:8000/info',
+        fetch(`${process.env.REACT_APP_SERVER}/info`,
             { method: "PATCH", body: JSON.stringify(comicInfo)}
         ).then(res=>{
             addToast('Saved Successfully', { appearance: 'success' })
