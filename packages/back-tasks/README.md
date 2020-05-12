@@ -5,7 +5,5 @@
 ## Usage
 
 ```
-const backTasks = require('back-tasks');
-
-// TODO: DEMONSTRATE API
+yarn start 'pdf path' 'save path'
 ```
