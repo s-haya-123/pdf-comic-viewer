@@ -57,17 +57,15 @@ function RenderComic() {
     const {innerWidth, innerHeight} = window;
     const originScale = (innerWidth / 2) / originWidth;
     const scaledHeight = originHeight * originScale;
-    const height = scaledHeight < innerHeight ? scaledHeight : innerHeight -5;
     const scale = scaledHeight < innerHeight ? originScale : (innerHeight / originHeight);
-    const width = originWidth * scale;
     setMaxPage(pageNumber);
     setScale(scale);
-    setCanvasSize({ width, height });
+    setCanvasSize({ width: originWidth, height: originHeight });
     const pages = await Promise.all([
       factory.getPage(initPage),
       factory.getPage(initPage+1)
     ]);
-    renderPDF(pages, scale);
+    renderPDF(pages, 1);
   };
   const prefetchPDF = async (factory: PDFFactory) => {
     const { pageNumber } = await factory.getPDFSize();
@@ -187,7 +185,7 @@ function RenderComic() {
       </div>
         { 
           isShowMenu &&
-            <div className="info-menu">
+            <div className="info-menu" onPointerUp={(e)=>e.stopPropagation()}>
               <CloseAction.Provider value={()=>setIsShowMenu(false)}>
                 <EditInfo></EditInfo>
               </CloseAction.Provider>

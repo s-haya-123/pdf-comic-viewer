@@ -23,7 +23,7 @@ function EditInfo() {
         setComicInfo({...comicInfo, [key]: value} as Comic)
     }
     return (
-      <div className="info-wrapper">
+      <div className="info-wrapper" onKeyDown={e => e.stopPropagation()}>
         <div className="close" onClick={()=> closeAction()}><FontAwesomeIcon icon={faTimes} size="lg"/></div>
         <div className="editInfo">
             <input defaultValue={(selectComic?.title || '')} onChange={(event)=>setInfo('title', event.target.value)}></input>
