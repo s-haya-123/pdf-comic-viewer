@@ -20,7 +20,7 @@ export function reducer(state: ComicState, action: Action): ComicState {
             return { ...state, selectComic: action.payload }
         }
         case 'storeComics': {
-            return {...state, comics: action.payload}
+            return {...state, comics: [ ...(state.comics || []), ...action.payload]}
         }
         default: {
             return state;

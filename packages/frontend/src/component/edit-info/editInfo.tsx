@@ -25,7 +25,7 @@ function EditInfo() {
     return (
       <div className="info-wrapper">
         <div className="close" onClick={()=> closeAction()}><FontAwesomeIcon icon={faTimes} size="lg"/></div>
-        <div>
+        <div className="editInfo">
             <input defaultValue={(selectComic?.title || '')} onChange={(event)=>setInfo('title', event.target.value)}></input>
             <input defaultValue={(selectComic?.author || '')} onChange={(event)=>setInfo('author', event.target.value)}></input>
             <button onClick={save}>決定</button>

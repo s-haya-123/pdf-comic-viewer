@@ -1,23 +1,28 @@
-import React, { useEffect, useState, useContext, createContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, createContext, useRef, useReducer } from 'react';
 import { Comic } from '../../models/comic';
 import './main.css';
 import { useHistory } from 'react-router-dom';
-import { DispatchContext } from '../../state/comic'
+import { DispatchContext, ComicStateContext } from '../../state/comic'
 
 export const ComicList = createContext<Comic[] | undefined>(null as any);
 function Main() {
   const inputEl = useRef<HTMLInputElement>(null);
   const [list, setList] = useState<Comic[]>([]);
-  const [originList, setOriginList] = useState<Comic[]>([]);
   const dispatch = useContext(DispatchContext);
   const history = useHistory();
-  const limit = 5;
+  const limit = Number(process.env.REACT_APP_PAGE_LIMIT);
   const [page, setPage] = useState(1);
+  const { comics } = useContext(ComicStateContext);
   useEffect(()=>{
-    fetchPage(page, list, originList);
+    if(comics) {
+      setList(comics);
+      setPage(Math.floor(comics.length / limit));
+      return;
+    }
+    fetchPage(page, []);
   }, []);
 
-  const fetchPage = (nextPage: number, oldList: Comic[], oldOriginList: Comic[]) => {
+  const fetchPage = (nextPage: number, oldList: Comic[]) => {
     fetch(`${process.env.REACT_APP_SERVER}/pdf/list?limit=${limit}&page=${nextPage}`)
     .then(res=>res.json())
     .then((json)=>{
@@ -28,26 +33,26 @@ function Main() {
       } else {
         setList([...oldList, ...json])
       }
-      setOriginList([...oldOriginList,...json]);
+      dispatch({type: 'storeComics', payload: json})
     });
   }
   const searchComic = ( value: string, targetList: Comic[]) => {
     const messages = value.trimEnd().replace('　',' ').split(/ +/);
     return targetList?.filter(comic=>messages.filter(message=>JSON.stringify(comic).indexOf(message) >= 0).length === messages.length);
   };
-  const fetchNextPage = (oldPage: number, list: Comic[], oldOriginList: Comic[]) => {
+  const fetchNextPage = (oldPage: number, list: Comic[]) => {
     const nextPage = oldPage +1;
-    fetchPage(nextPage, list, oldOriginList);
+    fetchPage(nextPage, list);
     setPage(nextPage);
   };
   const openPDFPage = (selectComic: Comic)=>{
-    dispatch({type: 'store', payload: selectComic});
+    dispatch({type: 'storeComic', payload: selectComic});
     history.push(`/page/${selectComic.id}`);
   }
   return (
     <div>
       <div className="search">
-        <input className="search-input" onChange={({ target : { value }})=>setList(searchComic(value, originList))} ref={inputEl}></input>
+        <input className="search-input" onChange={({ target : { value }})=>setList(searchComic(value, list))} ref={inputEl}></input>
       </div>
       <div className="list">
         {list?.map(
@@ -58,7 +63,7 @@ function Main() {
             </div>
         )}
         <div className="nextPageWrapper">
-          <button className="nextPage" onClick={()=>fetchNextPage(page, list, originList)}>もっと見る</button>
+          <button className="nextPage" onClick={()=>fetchNextPage(page, list)}>もっと見る</button>
         </div>
       </div>
     </div>
